@@ -11,6 +11,18 @@ datasource db {
 }
 
 model user {
-  id Int  @default(autoincrement()) @unique
-  name String
+  id         Int       @id @default(autoincrement())
+  username        String    @db.VarChar(50)
+  password        String    @db.VarChar(50)
+  email           String    @db.VarChar(100)
+  first_name      String    @db.VarChar(50)
+  middle_name     String    @db.VarChar(50)
+  last_name       String    @db.VarChar(50)
+  role            String    @db.VarChar(50)
+  faculty         String?   @db.VarChar(100)
+  department      String?   @db.VarChar(100)
+  job             String?   @db.VarChar(50)
+  contact_number  String?   @db.VarChar(20)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 }

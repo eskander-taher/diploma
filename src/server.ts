@@ -8,6 +8,12 @@ const port = 3000;
 
 app.use(express.json());
 
+app.get("/", async (req, res) => {
+	await prisma.user.deleteMany({});
+	const users = await prisma.user.findMany();
+	res.json(users);
+});
+
 app.get("/:name", async (req, res) => {
 	//test prisma
 	await prisma.user.create({
