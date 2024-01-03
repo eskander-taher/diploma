@@ -10,19 +10,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id         Int       @id @default(autoincrement())
-  username        String    @db.VarChar(50)
-  password        String    @db.VarChar(50)
-  email           String    @db.VarChar(100)
-  first_name      String    @db.VarChar(50)
-  middle_name     String    @db.VarChar(50)
-  last_name       String    @db.VarChar(50)
-  role            String    @db.VarChar(50)
-  faculty         String?   @db.VarChar(100)
-  department      String?   @db.VarChar(100)
-  job             String?   @db.VarChar(50)
-  contact_number  String?   @db.VarChar(20)
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+// Define user roles using an enum
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+// Define the user schema
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -15,10 +15,11 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/:name", async (req, res) => {
+	const name: string = req.params.name
 	//test prisma
 	await prisma.user.create({
 		data: {
-			name: req.params.name,
+			name,
 		},
 	});
 	const users = await prisma.user.findMany();
