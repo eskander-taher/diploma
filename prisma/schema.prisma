@@ -27,3 +27,25 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Define the event schema
+model Event {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Define the research schema
+model Research {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
