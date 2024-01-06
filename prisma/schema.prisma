@@ -10,45 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Define user roles using an enum
 enum UserRole {
   USER
   ADMIN
   MODERATOR
 }
 
-// Define the user schema
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  role      UserRole
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // Additional user-specific fields can be added as needed
-  events    Event[]  @relation("EventAuthor")
-  researches Research[] @relation("ResearchAuthor")
-}
+  id Int @id @default(autoincrement())
 
-// Define the event schema
-model Event {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  author    User     @relation("EventAuthor", fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  username String @unique
+  email    String @unique
 
-// Define the research schema
-model Research {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  author    User     @relation("ResearchAuthor", fields: [authorId], references: [id])
-  authorId  Int
+  password String
+  role     UserRole @default(USER)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
