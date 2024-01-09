@@ -6,6 +6,19 @@ import z from "zod";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+import bcrypt from "bcrypt";
+const SALT_ROUNDS = 10;
+
+import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+
+const transporter = nodemailer.createTransport({
+	host: "smtp.gmail.com",
+	auth: {
+		user: process.env.EMAIL_ADDRESS,
+		pass: process.env.EMAIL_PASSWORD,
+	},
+});
 
 router.get("/users", async (req: Request, res: Response) => {
 	try {
@@ -22,7 +35,7 @@ router.get("/users", async (req: Request, res: Response) => {
 
 router.post("/users", async (req: Request, res: Response) => {
 	try {
-		//validate request inputs
+		//input validation
 		const username: string = req.body.username;
 		const email: string = req.body.email;
 		const password: string = req.body.password;
@@ -39,10 +52,29 @@ router.post("/users", async (req: Request, res: Response) => {
 			password,
 		});
 
-		//store user in db
-		const createdUser = await prisma.user.create({ data: user });
+		//input storing
+		const salt = await bcrypt.genSalt(SALT_ROUNDS);
+		const hashedPassword = await bcrypt.hash(password, salt);
+		const createdUser = await prisma.user.create({
+			data: {
+				...user,
+				password: hashedPassword,
+			},
+		});
 
-		//verify email
+		//email validation
+		// const verificationToken = jwt.sign(createdUser, process.env.SECRET);
+
+		// const verificationLink: string = `http://localhost:3000/verify-email?userId=${createdUser.id}&uniqueId=${createdUser.id}`;
+
+		// const message = {
+		// 	from: process.env.EMAIL_ADDRESS,
+		// 	to: email,
+		// 	subject: "Verify Your Email Address",
+		// 	text: `Please click on the following link to verify your email address: ${verificationLink}`,
+		// };
+
+		// await transporter.sendMail(message);
 
 		res.json({
 			createdUser,

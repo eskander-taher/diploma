@@ -18,11 +18,12 @@ const zod_1 = __importDefault(require("zod"));
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const transporter = nodemailer_1.default.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     auth: {
-        user: 'yourEmail@gmail.com',
-        pass: 'yourPassword',
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_PASSWORD,
     },
 });
 router.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -39,7 +40,7 @@ router.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* (
 }));
 router.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //validate request inputs
+        //input validation
         const username = req.body.username;
         const email = req.body.email;
         const password = req.body.password;
@@ -53,9 +54,18 @@ router.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             email,
             password,
         });
-        //store user in db
+        //input storing
         const createdUser = yield prisma.user.create({ data: user });
-        //verify email
+        //email validation
+        const verificationToken = jsonwebtoken_1.default.sign(createdUser, process.env.SECRET);
+        const verificationLink = `http://localhost:3000/verify-email?userId=${createdUser.id}&uniqueId=${createdUser.id}`;
+        const message = {
+            from: process.env.EMAIL_ADDRESS,
+            to: email,
+            subject: "Verify Your Email Address",
+            text: `Please click on the following link to verify your email address: ${verificationLink}`,
+        };
+        yield transporter.sendMail(message);
         res.json({
             createdUser,
         });
