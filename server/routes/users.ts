@@ -12,17 +12,24 @@ const SALT_ROUNDS = 10;
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 
-const transporter = nodemailer.createTransport({
-	host: "smtp.gmail.com",
-	auth: {
-		user: process.env.EMAIL_ADDRESS,
-		pass: process.env.EMAIL_PASSWORD,
-	},
-});
+
 
 router.get("/users", async (req: Request, res: Response) => {
 	try {
 		const users = await prisma.user.findMany({});
+		
+		res.json({
+			success: true,
+			data: users,
+		});
+	} catch (error: any) {
+		res.json({ success: false, error });
+	}
+});
+
+router.delete("/users", async (req: Request, res: Response) => {
+	try {
+		const users = await prisma.user.deleteMany({});
 
 		res.json({
 			success: true,
@@ -63,21 +70,28 @@ router.post("/users", async (req: Request, res: Response) => {
 		});
 
 		//email validation
-		// const verificationToken = jwt.sign(createdUser, process.env.SECRET);
+		const verificationToken = jwt.sign(createdUser, process.env.SECRET as string);
+		const verificationLink: string = `http://localhost:3000/verify-email?token=${verificationToken}`;
 
-		// const verificationLink: string = `http://localhost:3000/verify-email?userId=${createdUser.id}&uniqueId=${createdUser.id}`;
+		const transporter = nodemailer.createTransport({
+			host: "smtp.gmail.com",
+			auth: {
+				user: process.env.EMAIL_ADDRESS,
+				pass: process.env.EMAIL_PASSWORD,
+			},
+		});
 
-		// const message = {
-		// 	from: process.env.EMAIL_ADDRESS,
-		// 	to: email,
-		// 	subject: "Verify Your Email Address",
-		// 	text: `Please click on the following link to verify your email address: ${verificationLink}`,
-		// };
+		const message = {
+			from: process.env.EMAIL_ADDRESS,
+			to: email,
+			subject: "Verify Your Email Address",
+			text: `Please click on the following link to verify your email address: ${verificationLink}`,
+		};
 
-		// await transporter.sendMail(message);
+		await transporter.sendMail(message);
 
 		res.json({
-			createdUser,
+			message: "a message to user email has been sent",
 		});
 	} catch (error: any) {
 		console.log(error);
