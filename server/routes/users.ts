@@ -40,7 +40,7 @@ router.post("/users", async (req: Request, res: Response) => {
 			password,
 		});
 
-		// Storing user input in the database
+		// Storing user input in db
 		const salt = await bcrypt.genSalt(SALT_ROUNDS);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -51,14 +51,13 @@ router.post("/users", async (req: Request, res: Response) => {
 			},
 		});
 
-		// Generating JWT token for email verification
-		const { id, email: userEmail } = createdUser;
+		// Generating JWT verification link
+		const { id } = createdUser;
 		const tokenExpirationTime = "1d";
-		const verificationToken = jwt.sign({ id, email: userEmail }, process.env.SECRET as string, {
+		const verificationToken = jwt.sign({ id }, process.env.SECRET as string, {
 			expiresIn: tokenExpirationTime,
 		});
 
-		// Constructing the verification link
 		const verificationLink: string = `http://localhost:3000/verify-email?token=${verificationToken}`;
 
 		// Sending email with verification link
@@ -72,7 +71,7 @@ router.post("/users", async (req: Request, res: Response) => {
 
 		const message = {
 			from: process.env.EMAIL_ADDRESS,
-			to: userEmail,
+			to: email,
 			subject: "Verify Your Email Address",
 			text: `Please click on the following link to verify your email address: ${verificationLink}`,
 		};
@@ -109,6 +108,7 @@ router.get("/verify-email", async (req: Request, res: Response) => {
 				verified: true,
 			},
 		});
+		
 		res.json({
 			success: true,
 			data: verifiedUser,
