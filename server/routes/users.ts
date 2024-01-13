@@ -95,6 +95,11 @@ router.post("/users", async (req: Request, res: Response) => {
 	}
 });
 
+const person = {
+	name: "ali",
+	email: "mail.com"
+}
+
 router.get("/verify-email", async (req: Request, res: Response) => {
 	try {
 		const verificationToken = req.query.token;
