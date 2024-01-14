@@ -23,6 +23,13 @@ interface User {
 	updatedAt?: string;
 }
 
+const generateVerificationLink = (id: number, expirationTime: string) => {
+	const verificationToken = jwt.sign({ id }, process.env.SECRET as string, {
+		expiresIn: expirationTime,
+	});
+	return `http://localhost:3000/verify-email?token=${verificationToken}`;
+};
+
 router.post("/users", async (req: Request, res: Response) => {
 	try {
 		// Validating user input
@@ -54,11 +61,8 @@ router.post("/users", async (req: Request, res: Response) => {
 		// Generating JWT verification link
 		const { id } = createdUser;
 		const tokenExpirationTime = "1d";
-		const verificationToken = jwt.sign({ id }, process.env.SECRET as string, {
-			expiresIn: tokenExpirationTime,
-		});
 
-		const verificationLink: string = `http://localhost:3000/verify-email?token=${verificationToken}`;
+		const verificationLink: string = generateVerificationLink(id, tokenExpirationTime);
 
 		// Sending email with verification link
 		const transporter = nodemailer.createTransport({
