@@ -1,3 +1,13 @@
+
+
+/*
+	TODOS
+	1. add ejs template after user is registered
+	2. add ejs template after user verify his email
+*/
+
+
+
 import { Router, Request, Response } from "express";
 const router = Router();
 
