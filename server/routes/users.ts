@@ -92,10 +92,11 @@ router.post("/users", async (req: Request, res: Response) => {
 
 		try {
 			await transporter.sendMail(message);
-			res.json({
-				success: true,
-				message: "A message was sent to your email address.",
-			});
+			// res.json({
+			// 	success: true,
+			// 	message: "A message was sent to your email address.",
+			// });
+			res.render("verifyEmail", { email });
 		} catch (emailError) {
 			console.error("Error sending email:", emailError);
 			res.status(500).json({
@@ -108,11 +109,6 @@ router.post("/users", async (req: Request, res: Response) => {
 		res.json({ success: false, error });
 	}
 });
-
-const person = {
-	name: "ali",
-	email: "mail.com"
-}
 
 router.get("/verify-email", async (req: Request, res: Response) => {
 	try {
@@ -127,11 +123,12 @@ router.get("/verify-email", async (req: Request, res: Response) => {
 				verified: true,
 			},
 		});
-		
-		res.json({
-			success: true,
-			data: verifiedUser,
-		});
+
+		// res.json({
+		// 	success: true,
+		// 	data: verifiedUser,
+		// });
+		res.render("emailVerified", { name: verifiedUser.username, email: verifiedUser.email });
 	} catch (error) {
 		console.log(error);
 		res.json({
