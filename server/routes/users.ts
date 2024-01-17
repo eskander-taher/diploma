@@ -57,6 +57,7 @@ router.post("/users", async (req: Request, res: Response) => {
 			password,
 		});
 
+
 		// Storing user input in db
 		const salt = await bcrypt.genSalt(SALT_ROUNDS);
 		const hashedPassword = await bcrypt.hash(password, salt);
