@@ -1,13 +1,3 @@
-
-
-/*
-	TODOS
-	1. add ejs template after user is registered
-	2. add ejs template after user verify his email
-*/
-
-
-
 import { Router, Request, Response } from "express";
 const router = Router();
 
@@ -33,14 +23,71 @@ interface User {
 	updatedAt?: string;
 }
 
-const generateVerificationLink = (id: number, expirationTime: string) => {
-	const verificationToken = jwt.sign({ id }, process.env.SECRET as string, {
+const generateVerificationLink = (userId: number, expirationTime: string) => {
+	const verificationToken = jwt.sign({ userId }, process.env.SECRET as string, {
 		expiresIn: expirationTime,
 	});
 	return `http://localhost:3000/verify-email?token=${verificationToken}`;
 };
 
-router.post("/users", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
+	try {
+		// Validating user input
+		const { email, password } = req.body;
+
+		const userLoginSchema = z.object({
+			email: z.string().email(),
+			password: z.string().min(3, "Password must contain at least 3 characters"),
+		});
+
+		const userInput = userLoginSchema.parse({
+			email,
+			password,
+		});
+
+		// Check if the user exists in the database
+		const existingUser = await prisma.user.findUnique({
+			where: {
+				email: userInput.email,
+			},
+		});
+
+		if (!existingUser) {
+			return res.status(404).json({
+				success: false,
+				error: "User not found. Please register first.",
+			});
+		}
+
+		// Compare the provided password with the hashed password stored in the database
+		const passwordMatch = await bcrypt.compare(userInput.password, existingUser.password);
+
+		if (!passwordMatch) {
+			return res.status(401).json({
+				success: false,
+				error: "Invalid password.",
+			});
+		}
+
+		// Generate JWT token
+		const token = jwt.sign({ userId: existingUser.id }, process.env.SECRET as string, {
+			expiresIn: "1d",
+		});
+
+		res.json({
+			success: true,
+			token,
+		});
+	} catch (error: any) {
+		console.error("Login error:", error);
+		res.status(500).json({
+			success: false,
+			error: "Internal server error.",
+		});
+	}
+});
+
+router.post("/register", async (req: Request, res: Response) => {
 	try {
 		// Validating user input
 		const { username, email, password } = req.body;
@@ -56,7 +103,6 @@ router.post("/users", async (req: Request, res: Response) => {
 			email,
 			password,
 		});
-
 
 		// Storing user input in db
 		const salt = await bcrypt.genSalt(SALT_ROUNDS);
@@ -124,11 +170,6 @@ router.get("/verify-email", async (req: Request, res: Response) => {
 				verified: true,
 			},
 		});
-
-		// res.json({
-		// 	success: true,
-		// 	data: verifiedUser,
-		// });
 		res.render("emailVerified", { name: verifiedUser.username, email: verifiedUser.email });
 	} catch (error) {
 		console.log(error);
@@ -164,6 +205,5 @@ router.delete("/users", async (req: Request, res: Response) => {
 		res.json({ success: false, error });
 	}
 });
-
 
 export default router;
