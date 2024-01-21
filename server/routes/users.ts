@@ -7,39 +7,24 @@ const SALT_ROUNDS = 10;
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 
 import authenticateToken from "../middlewares/auth";
-import { User } from "../types";
 import sendVerificationEmail from "../utils/sendVerificationEmail";
 
-const generateVerificationLink = (userId: number) => {
-	const verificationToken = jwt.sign({ userId }, process.env.SECRET as string, {
-		expiresIn: "1d",
-	});
-	return `http://localhost:3000/verify-email?token=${verificationToken}`;
-};
+const userRegistrationSchema = z.object({
+	username: z.string().trim(),
+	email: z.string().email(),
+	password: z.string().min(3, "Password must contain at least 3 characters"),
+});
 
-router.post("/register", async (req: Request, res: Response) => {
+router.post("/users", async (req: Request, res: Response) => {
 	try {
 		// Validating user input
-		const { username, email, password } = req.body;
-
-		const userRegistrationSchema = z.object({
-			username: z.string().trim(),
-			email: z.string().email(),
-			password: z.string().min(3, "Password must contain at least 3 characters"),
-		});
-
-		const user = userRegistrationSchema.parse({
-			username,
-			email,
-			password,
-		});
+		const user = userRegistrationSchema.parse(req.body);
 
 		// Storing user input in db
 		const salt = await bcrypt.genSalt(SALT_ROUNDS);
-		const hashedPassword = await bcrypt.hash(password, salt);
+		const hashedPassword = await bcrypt.hash(user.password, salt);
 
 		const createdUser = await prisma.user.create({
 			data: {
@@ -49,10 +34,11 @@ router.post("/register", async (req: Request, res: Response) => {
 		});
 
 		try {
-			await sendVerificationEmail(createdUser.id, email);
+			const { id, email } = createdUser;
+			await sendVerificationEmail(id, email);
 			res.render("verifyEmail", { email });
-		} catch (emailError) {
-			console.error("Error sending email:", emailError);
+		} catch (err) {
+			console.error("Error sending email:", err);
 			res.status(500).json({
 				success: false,
 				error: "Failed to send verification email.",
@@ -61,6 +47,33 @@ router.post("/register", async (req: Request, res: Response) => {
 	} catch (error: any) {
 		console.error("User registration error:", error);
 		res.json({ success: false, error });
+	}
+});
+
+router.get("/verify-email", async (req: Request, res: Response) => {
+	try {
+		const verificationToken = req.query.token;
+		const user = jwt.verify(verificationToken as string, process.env.SECRET as string) as {
+			id: number;
+			iat: number;
+			exp: number;
+		};
+
+		const verifiedUser = await prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				verified: true,
+			},
+		});
+		res.render("emailVerified", { name: verifiedUser.username, email: verifiedUser.email });
+	} catch (error) {
+		console.log(error);
+		res.json({
+			success: false,
+			error,
+		});
 	}
 });
 
@@ -121,28 +134,7 @@ router.post("/login", async (req: Request, res: Response) => {
 	}
 });
 
-router.get("/verify-email", async (req: Request, res: Response) => {
-	try {
-		const verificationToken = req.query.token;
-		const user = jwt.verify(verificationToken as string, process.env.SECRET as string) as User;
 
-		const verifiedUser = await prisma.user.update({
-			where: {
-				id: user.id,
-			},
-			data: {
-				verified: true,
-			},
-		});
-		res.render("emailVerified", { name: verifiedUser.username, email: verifiedUser.email });
-	} catch (error) {
-		console.log(error);
-		res.json({
-			success: false,
-			error,
-		});
-	}
-});
 
 router.get("/admin-data", authenticateToken("ADMIN"), (req: Request, res: Response) => {
 	res.json({ success: true, message: "admin data" });
