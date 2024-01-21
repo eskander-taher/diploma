@@ -4,17 +4,21 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 interface User {
-  id?: number;
-  username: string;
-  email: string;
-  password: string;
-  role?: string;
-  verified?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+	id?: number;
+	username: string;
+	email: string;
+	password: string;
+	role?: string;
+	verified?: boolean;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
 
-export const authenticateToken = (requiredRole: string) => async (req: Request, res: Response, next: NextFunction) => {
+interface IRequestWithUser extends Request {
+  user?: User 
+}
+
+export const authenticateToken = (requiredRole: string) => async (req: IRequestWithUser, res: Response, next: NextFunction) => {
   const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
@@ -64,3 +68,5 @@ export const authenticateToken = (requiredRole: string) => async (req: Request, 
     });
   }
 };
+
+export default authenticateToken
