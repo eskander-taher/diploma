@@ -16,7 +16,7 @@ export default function RegisterForm() {
       });
 
       console.log("Registration successful:", response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration failed:", error.message);
     }
   }
