@@ -16,10 +16,8 @@ export default function RegisterForm() {
       });
 
       console.log("Registration successful:", response.data);
-      // You can handle success, such as redirecting the user or showing a success message.
     } catch (error) {
       console.error("Registration failed:", error.message);
-      // You can handle errors, such as displaying an error message to the user.
     }
   }
 
