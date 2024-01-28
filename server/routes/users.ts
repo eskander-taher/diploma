@@ -134,8 +134,6 @@ router.post("/login", async (req: Request, res: Response) => {
 	}
 });
 
-
-
 router.get("/admin-data", authenticateToken("ADMIN"), (req: Request, res: Response) => {
 	res.json({ success: true, message: "admin data" });
 });
