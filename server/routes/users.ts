@@ -50,6 +50,36 @@ router.post("/users", async (req: Request, res: Response) => {
 	}
 });
 
+router.patch("/admin/change-role/:userId", authenticateToken("ADMIN"), async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+
+        // Validate the role or perform any other necessary validations
+
+        // Update the user's role in the database
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: parseInt(userId, 10),
+            },
+            data: {
+                role: role,
+            },
+        });
+
+        res.json({
+            success: true,
+            data: updatedUser,
+        });
+    } catch (error: any) {
+        console.error("Error changing user role:", error);
+        res.status(500).json({
+            success: false,
+            error: "Internal server error.",
+        });
+    }
+});
+
 router.get("/verify-email", async (req: Request, res: Response) => {
 	try {
 		const verificationToken = req.query.token;
