@@ -55,7 +55,7 @@ router.patch("/admin/change-role/:userId", authenticateToken("ADMIN"), async (re
         const { userId } = req.params;
         const { role } = req.body;
 
-        // Validate the role or perform any other necessary validations
+        // Validate the input
 
         // Update the user's role in the database
         const updatedUser = await prisma.user.update({
