@@ -11,6 +11,7 @@ export interface User {
 	updatedAt?: Date;
 }
 
+
 export interface IExpressRequestWithUser extends Request {
 	user?: User;
 }
