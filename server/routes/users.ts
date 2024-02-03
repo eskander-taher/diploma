@@ -12,14 +12,15 @@ import authenticateToken from "../middlewares/auth";
 import sendVerificationEmail from "../utils/sendVerificationEmail";
 
 const userRegistrationSchema = z.object({
-	username: z.string().trim(),
+	username: z.string().min(3),
 	email: z.string().email(),
-	password: z.string().min(3, "Password must contain at least 3 characters"),
+	password: z.string().min(3),
 });
 
 router.post("/users", async (req: Request, res: Response) => {
 	try {
 		// Validating user input
+		console.log(req.body)
 		const user = userRegistrationSchema.parse(req.body);
 
 		// Storing user input in db
@@ -36,7 +37,10 @@ router.post("/users", async (req: Request, res: Response) => {
 		try {
 			const { id, email } = createdUser;
 			await sendVerificationEmail(id, email);
-			res.render("verifyEmail", { email });
+			res.json({
+				success: true,
+				message: `verification message was sent to email: ${email}`,
+			})
 		} catch (err) {
 			console.error("Error sending email:", err);
 			res.status(500).json({
