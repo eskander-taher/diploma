@@ -20,7 +20,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={cn("relative h-full font-sans antialiased", inter.className)}>
-				{/* The theme provider is causing a warning, maybe on production the error ith go */}
+				{/* The theme provider is causing a warning, after search found someone said on production goes */}
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

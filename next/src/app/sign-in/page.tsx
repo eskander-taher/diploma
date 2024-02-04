@@ -29,9 +29,26 @@ export default function Signin() {
 		},
 	});
 
-	const handleSubmit = (values: z.infer<typeof formSchema>) => {
-		console.log(values);
-		form.reset();
+	const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+		try {
+			const res = await fetch("http://localhost:3001/login", {
+				method: "POST",
+				body: JSON.stringify(values),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+
+			const data = await res.json();
+			console.log(data);
+			form.reset();
+		} catch (error) {
+			console.error("Error during form submission:", error);
+		}
 	};
 
 	return (

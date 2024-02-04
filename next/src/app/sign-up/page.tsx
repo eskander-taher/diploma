@@ -15,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import { useState } from "react";
+
 const formSchema = z.object({
 	username: z.string().min(3),
 	email: z.string().email(),
@@ -22,6 +24,7 @@ const formSchema = z.object({
 });
 
 export default function Signup() {
+	const [emailSent, setEmailSent] = useState(false);
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -47,7 +50,9 @@ export default function Signup() {
 
 			const data = await res.json();
 			console.log(data);
+
 			form.reset();
+			setEmailSent(true);
 		} catch (error) {
 			console.error("Error during form submission:", error);
 		}
@@ -55,66 +60,74 @@ export default function Signup() {
 
 	return (
 		<div className="flex flex-col mx-auto items-center justify-start py-20 max-w-4xl min-h-screen">
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(handleSubmit)}
-					className="max-w-md w-full flex flex-col gap-4"
-				>
-					<FormField
-						control={form.control}
-						name="username"
-						render={({ field }) => {
-							return (
-								<FormItem>
-									<FormLabel>Username</FormLabel>
-									<FormControl>
-										<Input placeholder="Username" type="text" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
-					/>
-					<FormField
-						control={form.control}
-						name="email"
-						render={({ field }) => {
-							return (
-								<FormItem>
-									<FormLabel>Email address</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Email address"
-											type="email"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
-					/>
-					<FormField
-						control={form.control}
-						name="password"
-						render={({ field }) => {
-							return (
-								<FormItem>
-									<FormLabel>Password</FormLabel>
-									<FormControl>
-										<Input placeholder="Password" type="password" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
-					/>
+			{emailSent ? (
+				<h1>verification email was sent to you email address</h1>
+			) : (
+				<Form {...form}>
+					<form
+						onSubmit={form.handleSubmit(handleSubmit)}
+						className="max-w-md w-full flex flex-col gap-4"
+					>
+						<FormField
+							control={form.control}
+							name="username"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel>Username</FormLabel>
+										<FormControl>
+											<Input placeholder="Username" type="text" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								);
+							}}
+						/>
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel>Email address</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Email address"
+												type="email"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								);
+							}}
+						/>
+						<FormField
+							control={form.control}
+							name="password"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel>Password</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Password"
+												type="password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								);
+							}}
+						/>
 
-					<Button type="submit" className="w-full">
-						Submit
-					</Button>
-				</form>
-			</Form>
+						<Button type="submit" className="w-full">
+							Submit
+						</Button>
+					</form>
+				</Form>
+			)}
 		</div>
 	);
 }

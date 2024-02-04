@@ -37,6 +37,13 @@ export default function NavigationMenuDemo() {
 						</NavigationMenuLink>
 					</Link>
 				</NavigationMenuItem>
+				<NavigationMenuItem>
+					<Link href="/admin" legacyBehavior passHref>
+						<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+							Admin
+						</NavigationMenuLink>
+					</Link>
+				</NavigationMenuItem>
 				<div>
 					<ModeToggle />
 				</div>

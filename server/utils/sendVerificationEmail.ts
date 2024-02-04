@@ -13,7 +13,7 @@ const generateVerificationLink = (userId: number) => {
 	const verificationToken = jwt.sign({ id: userId }, process.env.SECRET as string, {
 		expiresIn: "1d",
 	});
-	return `http://localhost:3000/verify-email?token=${verificationToken}`;
+	return `http://localhost:3001/verify-email?token=${verificationToken}`;
 };
 
 export default async function sendVerificationEmail (id: number, email: string) {
