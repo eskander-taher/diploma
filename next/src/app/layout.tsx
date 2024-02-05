@@ -4,8 +4,10 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
-import NavBar from "../components/NavBar";
+import Nav from "../components/Nav";
 const inter = Inter({ subsets: ["latin"] });
+
+import Provider from "@/utils/Providers";
 
 export const metadata: Metadata = {
 	title: "УУТиТ | СМУ",
@@ -27,9 +29,11 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<NavBar />
+					<Nav />
 					<main className="relative flex flex-col min-h-screen">
-						<div className="flex-grow flex-1">{children}</div>
+						<div className="flex-grow flex-1">
+							<Provider>{children}</Provider>
+						</div>
 					</main>
 				</ThemeProvider>
 			</body>

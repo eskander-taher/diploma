@@ -45,6 +45,8 @@ export default function Signin() {
 
 			const data = await res.json();
 			console.log(data);
+			localStorage.setItem("auth_token", data.token);
+			window.location.href = "/profile";
 			form.reset();
 		} catch (error) {
 			console.error("Error during form submission:", error);

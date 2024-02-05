@@ -54,7 +54,7 @@ router.post("/users", async (req: Request, res: Response) => {
 	}
 });
 
-router.patch("/admin/change-role/:userId", authenticateToken("ADMIN"), async (req: Request, res: Response) => {
+router.patch("/admin/change-role/:userId", async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
         const { role } = req.body;

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 
@@ -12,7 +13,21 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export default function NavigationMenuDemo() {
+export default function Nav() {
+	const [token, setToken] = useState<string | null>(null);
+
+	useEffect(() => {
+		const auth_token = localStorage.getItem("auth_token"); // Or retrieve from server-side storage
+		setToken(auth_token);
+	}, []);
+
+	const handleLogout = () => {
+		localStorage.removeItem("auth_token"); // Clear the token from localStorage
+		setToken(null); // Update the component state
+		// Optionally, redirect to a login page or other appropriate route
+		window.location.href = "/"; // Example redirection
+	};
+
 	return (
 		<NavigationMenu>
 			<NavigationMenuList>
@@ -44,6 +59,24 @@ export default function NavigationMenuDemo() {
 						</NavigationMenuLink>
 					</Link>
 				</NavigationMenuItem>
+				{token && (
+					<>
+						<NavigationMenuItem>
+							<Link href="/profile" legacyBehavior passHref>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									Profile
+								</NavigationMenuLink>
+							</Link>
+						</NavigationMenuItem>
+						<NavigationMenuItem>
+							<button onClick={handleLogout}>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									Logout
+								</NavigationMenuLink>
+							</button>
+						</NavigationMenuItem>
+					</>
+				)}
 				<div>
 					<ModeToggle />
 				</div>
