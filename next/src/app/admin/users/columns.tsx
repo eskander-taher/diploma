@@ -12,6 +12,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import axios from "axios";
 
 export type User = {
@@ -54,6 +56,7 @@ async function changeUserRole(userId: any, newRole: any) {
 		}
 	}
 }
+
 
 export const columns: ColumnDef<User>[] = [
 	{

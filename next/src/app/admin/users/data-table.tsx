@@ -16,13 +16,13 @@ import {
 
 
 export default function UsersDataTable() {
-	const { data, isSuccess, isLoading } = useQuery({
+	const userQuery = useQuery({
 		queryKey: ["example"],
 		queryFn: async () => await axios.get("http://localhost:3001/users"),
 	});
 
 	const table = useReactTable({
-		data: isSuccess ? data.data.data : [],
+		data: userQuery.isSuccess ? userQuery.data.data.data : [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	});
@@ -59,7 +59,7 @@ export default function UsersDataTable() {
 								))}
 							</TableRow>
 						))
-					) : isLoading ? (
+					) : userQuery.isLoading ? (
 						<TableRow>
 							<TableCell colSpan={columns.length} className="h-24 text-center">
 								Loading...
