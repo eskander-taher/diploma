@@ -1,5 +1,5 @@
 import Link from "next/link";
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {

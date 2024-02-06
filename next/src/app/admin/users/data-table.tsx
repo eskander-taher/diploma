@@ -1,6 +1,9 @@
 "use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { columns } from "./columns";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 import {
 	Table,
@@ -12,14 +15,14 @@ import {
 } from "@/components/ui/table";
 
 
-interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
-}
+export default function UsersDataTable() {
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ["example"],
+		queryFn: async () => await axios.get("http://localhost:3001/users"),
+	});
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
 	const table = useReactTable({
-		data,
+		data: isSuccess ? data.data.data : [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	});
@@ -56,6 +59,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 								))}
 							</TableRow>
 						))
+					) : isLoading ? (
+						<TableRow>
+							<TableCell colSpan={columns.length} className="h-24 text-center">
+								Loading...
+							</TableCell>
+						</TableRow>
 					) : (
 						<TableRow>
 							<TableCell colSpan={columns.length} className="h-24 text-center">
