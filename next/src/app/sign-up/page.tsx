@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 
 import { useState } from "react";
 
+import { useRegisterUser } from "@/services/api";
+
 const formSchema = z.object({
 	username: z.string().min(3),
 	email: z.string().email(),
@@ -24,7 +26,8 @@ const formSchema = z.object({
 });
 
 export default function Signup() {
-	const [emailSent, setEmailSent] = useState(false);
+	const addUserMutation = useRegisterUser();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -34,33 +37,15 @@ export default function Signup() {
 		},
 	});
 
-	const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-		try {
-			const res = await fetch("http://localhost:3001/users", {
-				method: "POST",
-				body: JSON.stringify(values),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			if (!res.ok) {
-				throw new Error(`HTTP error! Status: ${res.status}`);
-			}
-
-			const data = await res.json();
-			console.log(data);
-
-			form.reset();
-			setEmailSent(true);
-		} catch (error) {
-			console.error("Error during form submission:", error);
-		}
+	const handleSubmit = async (values: any) => {
+		addUserMutation.mutate(values);
+		form.reset();
 	};
+
 
 	return (
 		<div className="flex flex-col mx-auto items-center justify-start py-20 max-w-4xl min-h-screen">
-			{emailSent ? (
+			{addUserMutation.isSuccess ? (
 				<h1>verification email was sent to you email address</h1>
 			) : (
 				<Form {...form}>

@@ -12,8 +12,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import axios from "axios";
 
 export type User = {
@@ -57,6 +55,7 @@ async function changeUserRole(userId: any, newRole: any) {
 	}
 }
 
+import { useUpdateUser } from "@/services/api";
 
 export const columns: ColumnDef<User>[] = [
 	{
@@ -68,6 +67,10 @@ export const columns: ColumnDef<User>[] = [
 		header: "Email",
 	},
 	{
+		accessorKey: "verified",
+		header: "Email Verified",
+	},
+	{
 		accessorKey: "role",
 		header: "Role",
 	},
@@ -75,7 +78,7 @@ export const columns: ColumnDef<User>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			const user = row.original;
-
+			const updateUserMutaion = useUpdateUser();
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -86,13 +89,19 @@ export const columns: ColumnDef<User>[] = [
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>Change user role</DropdownMenuLabel>
-						<DropdownMenuItem onClick={() => changeUserRole(user.id, "ADMIN")}>
+						<DropdownMenuItem
+							onClick={() => updateUserMutaion.mutate({ ...user, role: "ADMIN" })}
+						>
 							Admin
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => changeUserRole(user.id, "MODERATOR")}>
+						<DropdownMenuItem
+							onClick={() => updateUserMutaion.mutate({ ...user, role: "MODERATOR" })}
+						>
 							Moderator
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => changeUserRole(user.id, "USER")}>
+						<DropdownMenuItem
+							onClick={() => updateUserMutaion.mutate({ ...user, role: "USER" })}
+						>
 							User
 						</DropdownMenuItem>
 					</DropdownMenuContent>
