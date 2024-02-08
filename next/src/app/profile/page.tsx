@@ -7,31 +7,25 @@ export default function Profile() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [token, setToken] = useState<string | null>(null);
 
+	const [role, setRole] = useState<string | null>("");
+
 	useEffect(() => {
 		const auth_token = localStorage.getItem("auth_token"); // Or retrieve from server-side storage
+		const role = localStorage.getItem("role");
 		setToken(auth_token);
 		if (auth_token) {
 			setIsLoggedIn(true);
+			setRole(role);
 		}
 	}, []);
-
-	// const fetchData = async (token) => {
-	// 	try {
-	// 		const response = await axios.get("/api/user/profile", {
-	// 			headers: { Authorization: `Bearer ${token}` },
-	// 		});
-	// 		setProfileData(response.data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching profile:", error);
-	// 		// Handle errors gracefully (e.g., retry, redirect to login)
-	// 	}
-	// };
 
 	return (
 		<div>
 			{isLoggedIn && token ? (
 				<div>
-					<h1>{token}</h1>
+					<h1>your access token is:</h1>
+					<h2>{role} profile</h2>
+					<p>{token}</p>
 				</div>
 			) : (
 				<p>Please log in to view your profile.</p>

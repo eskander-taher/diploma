@@ -158,6 +158,7 @@ router.post("/login", async (req: Request, res: Response) => {
 		res.json({
 			success: true,
 			token,
+			role:existingUser.role
 		});
 	} catch (error: any) {
 		console.error("Login error:", error);

@@ -46,6 +46,7 @@ export default function Signin() {
 			const data = await res.json();
 			console.log(data);
 			localStorage.setItem("auth_token", data.token);
+			localStorage.setItem("role", data.role);
 			window.location.href = "/profile";
 			form.reset();
 		} catch (error) {

@@ -9,7 +9,6 @@ import type { User } from "@/app/admin/users/columns";
 export const registerUser = async (data: User) => {
 	return (await axiosInstance.post("users", data)).data;
 };
-
 export const useRegisterUser = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -20,10 +19,21 @@ export const useRegisterUser = () => {
 	});
 };
 
+export const loginUser = async (data: User) => {
+	return (await axiosInstance.post("login", data)).data.data;
+};
+export const useLoginUser = () => {
+	return useMutation({
+		mutationFn: (data: any) => loginUser(data),
+		onSuccess: (data)=>{
+			console.log(data)
+		}
+	});
+};
+
 export const getUsers = async () => {
 	return (await axiosInstance.get("users")).data.data;
 };
-
 export const useGetUsers = () => {
 	return useQuery({
 		queryKey: ["users"],
@@ -34,7 +44,6 @@ export const useGetUsers = () => {
 export const updateUser = async (updatedUser: User) => {
 	return await axiosInstance.patch(`admin/change-role/${updatedUser.id}`, updatedUser);
 };
-
 export const useUpdateUser = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
