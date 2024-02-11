@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/table";
 
 import { useGetUsers } from "@/services/api";
+import { useUsers } from "@/services/api";
 
 export default function UsersDataTable() {
-	const usersQuery = useGetUsers();
+	const { getUsers } = useUsers();
+
+	console.log(getUsers.data);
 
 	const table = useReactTable({
-		data: usersQuery.isSuccess ? usersQuery.data : [],
+		data: getUsers.isSuccess ? getUsers.data : [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	});
@@ -55,7 +58,7 @@ export default function UsersDataTable() {
 								))}
 							</TableRow>
 						))
-					) : usersQuery.isLoading ? (
+					) : getUsers.isLoading ? (
 						<TableRow>
 							<TableCell colSpan={columns.length} className="h-24 text-center">
 								Loading...

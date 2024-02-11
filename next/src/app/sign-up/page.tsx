@@ -15,9 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { useState } from "react";
 
-import { useRegisterUser } from "@/services/api";
+import { useUsers } from "@/services/api";
 
 const formSchema = z.object({
 	username: z.string().min(3),
@@ -26,7 +25,7 @@ const formSchema = z.object({
 });
 
 export default function Signup() {
-	const addUserMutation = useRegisterUser();
+	const { registerUser } = useUsers();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -38,14 +37,13 @@ export default function Signup() {
 	});
 
 	const handleSubmit = async (values: any) => {
-		addUserMutation.mutate(values);
+		registerUser.mutate(values);
 		form.reset();
 	};
 
-
 	return (
 		<div className="flex flex-col mx-auto items-center justify-start py-20 max-w-4xl min-h-screen">
-			{addUserMutation.isSuccess ? (
+			{registerUser.isSuccess ? (
 				<h1>verification email was sent to you email address</h1>
 			) : (
 				<Form {...form}>
