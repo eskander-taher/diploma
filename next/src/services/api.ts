@@ -19,19 +19,7 @@ export function useUsers() {
 	return { getUsers, registerUser };
 }
 
-export const registerUser = async (data: User) => {
-	return (await axiosInstance.post("users", data)).data;
-};
 
-export const useRegisterUser = () => {
-	const queryClient = useQueryClient();
-	return useMutation({
-		mutationFn: (data: User) => registerUser(data),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["users"] });
-		},
-	});
-};
 export const loginUser = async (data: User) => {
 	return (await axiosInstance.post("login", data)).data.data;
 };
@@ -41,15 +29,6 @@ export const useLoginUser = () => {
 		onSuccess: (data) => {
 			console.log(data);
 		},
-	});
-};
-export const getUsers = async () => {
-	return (await axiosInstance.get("users")).data.data;
-};
-export const useGetUsers = () => {
-	return useQuery({
-		queryKey: ["users"],
-		queryFn: getUsers,
 	});
 };
 

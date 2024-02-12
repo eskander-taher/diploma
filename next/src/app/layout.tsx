@@ -9,8 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 import ThemeProvider from "@/components/theme-provider";
 import ReactQueryProvider from "@/components/react-query-provider";
 
-import Navbar  from "@/components/navbar";
-
 export const metadata: Metadata = {
 	title: "УУТиТ | СМУ",
 	description: "a heaven for young scientists",
