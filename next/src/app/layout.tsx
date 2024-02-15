@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 	description: "a heaven for young scientists",
 };
 
+
 export default function RootLayout({
 	children,
 }: Readonly<{
