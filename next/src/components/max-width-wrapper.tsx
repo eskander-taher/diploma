@@ -9,4 +9,5 @@ const MaxWidthWrapper = ({ className, children }: { className?: string; children
 	);
 };
 
+
 export default MaxWidthWrapper;
